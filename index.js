@@ -74,13 +74,16 @@ SurePetcareApi.prototype.getLockStatus = function(device_id, callback) {
     // 2 = Lock pets out
     // 3 = Lock both ways
 
-    this.getDevices(function(data) {
-        for(index in data) {
-            if(data[index].id == device_id) {
-                callback(data[index]);
+    this.getStatuses(function(data) {
+
+        var devs = [];
+
+        for(index in data.data.devices) {
+            if(data.data.devices[index].id == device_id) {
+                callback(data.data.devices[index]);
             }
         }
-    })
+    });
 
 }
 
@@ -97,28 +100,18 @@ SurePetcareApi.prototype.setLock = function(device_id, lockState, callback) {
     }, function(data) {
         callback(data);
     });
-
-
 }
 
-SurePetcareApi.prototype.getDevices = function(callback) {
+SurePetcareApi.prototype.getStatuses = function(callback) {
     this._makeAuthenticatedRequest({
         path: "/me/start",
         method: "GET"
     }, function(data) {
         data = JSON.parse(data);
-        var devs = [];
 
-        for(index in data.data.devices) {
-            var dev = data.data.devices[index];
-            switch(dev.product_id) {
-                case 6: //Cat flap
-                    devs.push(dev);
-                    break;
-            }
-        }
+        callback(data);
 
-        callback(devs);
+        
     });
 }
 
