@@ -137,3 +137,6 @@ tmp/
 temp/
 
 # End of https://www.gitignore.io/api/node,macos
+
+# Testing js file for messing around
+test.js
