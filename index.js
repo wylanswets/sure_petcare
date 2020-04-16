@@ -154,7 +154,7 @@ SurePetcareApi.prototype._makeAuthenticatedRequest = function(req, callback) {
           }
           else {
             err = err || new Error("Invalid status code " + response.statusCode);
-            this._notifyError(err, response, body);
+            // this._notifyError(err, response, body);
             callback(null, err);
           }
     }.bind(this));
