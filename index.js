@@ -18,6 +18,10 @@ function SurePetcareApi(config) {
 
     this.token = null;
 
+    this.pullingStatuses = false;
+    this.lastStatus = null;
+    this.lastStatusAge = null;
+    this.getStatusCallbacks = [];
 
 }
 
@@ -63,7 +67,7 @@ SurePetcareApi.prototype._loginComplete = function(err) {
     var self = this;
     self._loggedIn = true;
     self._loggingIn = false;
-    self._loginCompleteCallbacks.forEach(function(callback) { callback(err); });
+    self._loginCompleteCallbacks.forEach(function(callback) { callback(); });
     self._loginCompleteCallbacks = [];
 }
 
@@ -103,14 +107,29 @@ SurePetcareApi.prototype.setLock = function(device_id, lockState, callback) {
 }
 
 SurePetcareApi.prototype.getStatuses = function(callback) {
+    var self = this;
+
+    this.getStatusCallbacks.push(callback);
+
+    if(this.pullingStatuses === true) {
+        //Wait until we have states
+        return;
+    }
+    
+    //Lock so only one request happens at a time
+    this.pullingStatuses = true;
+
     this._makeAuthenticatedRequest({
         path: "/me/start",
         method: "GET"
-    }, function(data) {
+    }, function(data, err) {
         data = JSON.parse(data);
-
-        callback(data);
-
+        
+        self.getStatusCallbacks.forEach(function(cb) { cb(data); });
+        self.getStatusCallbacks = [];
+        //Unlock so we can pull more in the future
+        self.pullingStatuses = false;
+        
         
     });
 }
@@ -120,7 +139,9 @@ SurePetcareApi.prototype._makeAuthenticatedRequest = function(req, callback) {
     if (!this._loggedIn) {
         // try again when we're logged in
         this.login(function(err) {
-            if (err) return callback(null, err);
+            if (err) {
+                return callback(null, err);
+            }
             this._makeAuthenticatedRequest(req, callback); // login successful - try again!
         }.bind(this));
 
@@ -158,4 +179,16 @@ SurePetcareApi.prototype._makeAuthenticatedRequest = function(req, callback) {
             callback(null, err);
           }
     }.bind(this));
+}
+
+SurePetcareApi.prototype.translateBatteryToPercent = function(value) {
+    // 6 and higher is 100%
+    // 5 is 0%
+
+    //We will subtract 5 to normalize between 5 and 6, multiply by 100 to get a positive fractional number,
+    //and round to the nearest whole number to take off trailing percentages.
+    var num = Math.round((value - 5) * 100);
+    //Only return 100 or less;
+    return num > 100 ? 100 : num;
+
 }
