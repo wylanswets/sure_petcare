@@ -47,8 +47,14 @@ SurePetcareApi.prototype._beginLogin = function() {
           "device_id": self.email_address
         }
       }, function (err, response, body) {
+
+      if(err || response.statusCode === undefined) {
+        console.log("Login failed.");
+        console.log(body);
+        console.log(err);
+      }
         
-      if(response.statusCode === 200) {
+      else if(response.statusCode === 200) {
         
         this.token = body.data.token;
   

@@ -1,6 +1,6 @@
 {
   "name": "sure_petcare",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "NodeJS API library for Sure Petcare pet door",
   "main": "index.js",
   "dependencies": {
