@@ -1,20 +1,25 @@
 {
   "name": "sure_petcare",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "NodeJS API library for Sure Petcare pet door",
-  "main": "index.js",
+  "main": "dist/lib.js",
+  "types": "dist/lib.d.ts",
   "dependencies": {
     "request": "^2.88.2"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/request": "^2.48.8",
+    "typescript": "^4.7.4"
+  },
   "scripts": {
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/wylanswets/sure_petcare.git"
   },
-  "author": "Wylan Swets",
+  "author": "Wylan Swets & Jostein Kjønigsen",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/wylanswets/sure_petcare/issues"
